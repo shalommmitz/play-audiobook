@@ -7,13 +7,31 @@ class AudioPlayer(object):
     def __init__(self):
         self.vlc = VLC()
         self.current_audio_file = None
+        if not os.path.isfile("book_details.txt"):
+            book_details = self.get_book_details()
+            open("book_details.txt", 'w').write(book_details)
 
+    def get_book_details(self):
+        files = self.get_file_list()
+        book_details = ""
+        for file in files:
+            size = str(os.stat("./book/"+ file).st_size)
+            book_details += file +","+ size +"\n"
+        return book_details
+
+    def get_file_list(self):
+       for (_,__,files) in os.walk("book"):
+           pass
+       files.sort()
+       print files
+       return files
 
     def get_last_played_audio_file(self):
         def is_new_book(self):
             return True
         if is_new_book(self):
-            file = "test.mp3"
+            files = self.get_file_list()
+            file = files[0]
         else:
             file = open("last_played_audio_file.txt").read().strip()
         toLog( "get_last_played_audio_file returned: "+ file)
