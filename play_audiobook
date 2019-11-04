@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from AudioPlayer import AudioPlayer
 import tkinter as tk
+import os, glob
 
 def handle_btnPlayPause(player, btn, btnText):
     if player.get_status()=="Playing":
@@ -19,7 +20,30 @@ def ui(canvas, player):
     btnPlayPause = tk.Button(canvas, textvariable=btnText, font=("MS",12,"bold"), \
                              command = lambda: handle_btnPlayPause(player, btnPlayPause, btnText) )
     btnPlayPause.pack(expand=True,fill='both')
+    return btnText
 
+def play_next_file(root, btnText, player):
+    ui_playing = btnText.get()=="Pause"
+    player_playing = player.get_status()=="Playing"
+    #print "play_next_file: btnText:", btnText.get(), ui_playing, player.get_status(), player_playing
+    if ui_playing and not player_playing:
+        print "TIME TO PLAY NEXT FILE"
+        file = player.get_next_audio_file()
+        if file:
+            player.set_audio_file(file)
+            player.play()
+        else:
+            print "play_next_file: no more files to play"
+
+
+    root.after(500, play_next_file, root, btnText, player)
+
+if not os.path.isdir("./book/"):
+    print "The audio book files should be at the './book/' folder - Aborting"
+    exit()
+if len(glob.glob("./book/*"))==0:
+    print "The audio book files should be at the './book/' folder - Aborting"
+    exit()
 player = AudioPlayer()
 current_audio_file = player.get_last_played_audio_file()
 player.set_audio_file(current_audio_file)
@@ -30,7 +54,8 @@ root.attributes('-zoomed', True)
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 canvas = tk.Canvas(root, width=screen_width, height=screen_height)
-ui(canvas, player)
+btnText = ui(canvas, player)
 canvas.pack( expand=True, fill='both')
+play_next_file(root, btnText, player)
 
 tk.mainloop()

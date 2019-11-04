@@ -23,21 +23,40 @@ class AudioPlayer(object):
        for (_,__,files) in os.walk("book"):
            pass
        files.sort()
-       print files
        return files
+
+    def get_next_audio_file(self):
+        files = self.get_file_list()
+        if not self.current_audio_file:
+            return files[0]
+        current_file_index = files.index(self.current_audio_file)
+        print "current file index:", current_file_index
+        if current_file_index==len(files)-1:   #last file
+            return None
+        return files[current_file_index+1]
 
     def get_last_played_audio_file(self):
         def is_new_book(self):
-            return True
-        if is_new_book(self):
+            fn = "book_details.txt"
+            if not os.path.isfile(fn):
+                is_new = True 
+            else:
+                book_details_from_file = open(fn).read()
+                is_new = (self.get_book_details==book_details_from_file)
+            toLog( "is_new_book returned "+str(is_new))
+            return is_new
+
+        fn = "last_played_audio_file.txt"
+        if is_new_book(self) or not os.path.isfile(fn):
             files = self.get_file_list()
             file = files[0]
         else:
-            file = open("last_played_audio_file.txt").read().strip()
+            file = open(fn).read()
         toLog( "get_last_played_audio_file returned: "+ file)
         return file
 
     def set_audio_file(self, file_name): 
+        self.current_audio_file = file_name
         self.vlc.clear_track_list()
         self.vlc.add_track(os.getcwd() +"/book/"+ file_name)
     def play(self): return self.vlc.play()
@@ -92,7 +111,7 @@ class VLC(object):
 
     def get_status(self):
         status = self.prop.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus').strip()
-        print "vlc: status is: "+ status
+        #print "vlc: status is: "+ status
         return status
 
     def get_position(self):
@@ -132,7 +151,10 @@ class VLC(object):
 
     def get_lenght(self):
         # Return position, in micro seconds, of currently playing track
-        return self.get_metadata()['mpris:length']
+        metadata = self.get_metadata()
+        if not metadata:
+            return None
+        return metadata['mpris:length']
 
     def add_track(self, fn):
         # Add audio file to playing list. 'fn' must be full path !
@@ -149,16 +171,15 @@ if __name__=="__main__":
     #exit()
     num_tracks = vlc.get_num_tracks()
     print "len of track list:", num_tracks
-    vlc.add_track("/home/jon/play_audiobook/book/test.mp3")
-    num_tracks = vlc.get_num_tracks()
-    print "len of track list:", num_tracks
     vlc.clear_track_list()
     num_tracks = vlc.get_num_tracks()
     print "len of track list:", num_tracks
-    exit()
+    vlc.add_track("/home/jon/play_audiobook/book/test.mp3")
+    num_tracks = vlc.get_num_tracks()
+    print "len of track list:", num_tracks
     vlc.play()
     time.sleep(0.4)
-    for i in range(10):
+    for i in range(30):
         print "For time passed:", i*0.5
         print "    status:", vlc.get_status()
         print "    position:", vlc.get_position()
