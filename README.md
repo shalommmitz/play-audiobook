@@ -20,6 +20,13 @@ You will need VLC and:
 
     sudo apt-get install python-dbus
 
+## The VLC d-bus interface
+I found it hard to get reliable information about how to interface to VLC using dbus.
+Two resources are included that might be helpful, if you face a similar issue:
+
+- The file 'AudioPlayer.py' contain the function 'show_available_methods'.
+- The file 'vlc_dbus_interface.txt' shows all available methods (and how to re-find them).
+
 ## The Audio Book
 
 For simplicity, only one audiobook is played at any time. The audio files of this book are put in the folder "./book".

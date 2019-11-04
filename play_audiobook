@@ -2,24 +2,27 @@
 from AudioPlayer import AudioPlayer
 import tkinter as tk
 
-def handle_btnPlayPause(canvas, player):
+def handle_btnPlayPause(player, btn, btnText):
     if player.get_status()=="Playing":
         player.pause()
+        btnText.set("Play")
+        btn.pack(expand=True,fill='both')
     else:
         player.play()
+        btnText.set("Pause")
+        btn.pack(expand=True,fill='both')
     print "    status:", player.get_status()
 
 def ui(canvas, player):
-    btnPlayPause = tk.Button(canvas, text="Play", font=("MS",12,"bold"), \
-                             command = lambda: handle_btnPlayPause(canvas, player) )
+    btnText = tk.StringVar()
+    btnText.set("Play")
+    btnPlayPause = tk.Button(canvas, textvariable=btnText, font=("MS",12,"bold"), \
+                             command = lambda: handle_btnPlayPause(player, btnPlayPause, btnText) )
     btnPlayPause.pack(expand=True,fill='both')
 
 player = AudioPlayer()
-if player.is_new_book():
-    player.set_to_first_audio_file()
-else:
-    current_audio_file = player.get_current_audio_file()
-player.pause()
+current_audio_file = player.get_last_played_audio_file()
+player.set_audio_file(current_audio_file)
 
 root = tk.Tk()
 root.attributes('-zoomed', True)

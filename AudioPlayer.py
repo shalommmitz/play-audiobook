@@ -8,14 +8,20 @@ class AudioPlayer(object):
         self.vlc = VLC()
         self.current_audio_file = None
 
-    def is_new_book(self):
-        return True
 
-    def set_to_first_audio_file(self):
-        self.current_audio_file = "test.mp3"
-        
-    def add_audio_file(self, file_name): 
-        return self.vlc.add_audio_file(os.getcwd() +"/book/"+ file_name)
+    def get_last_played_audio_file(self):
+        def is_new_book(self):
+            return True
+        if is_new_book(self):
+            file = "test.mp3"
+        else:
+            file = open("last_played_audio_file.txt").read().strip()
+        toLog( "get_last_played_audio_file returned: "+ file)
+        return file
+
+    def set_audio_file(self, file_name): 
+        self.vlc.clear_track_list()
+        self.vlc.add_track(os.getcwd() +"/book/"+ file_name)
     def play(self): return self.vlc.play()
     def pause(self): return self.vlc.pause()
     def get_status(self): return self.vlc.get_status()
@@ -52,55 +58,89 @@ class VLC(object):
         if not pid:
             toLog("Failed launching VLC - Aborting")
             exit()
+        toLog("Launched vlc, pid is "+ str(pid))
         return pid
         
     def get_vlc_pid(self):
         return os.popen("pgrep vlc").read().strip()
 
     def play(self):
+        toLog("vlc: play")
         self.player.Play()
 
     def pause(self):
+        toLog("vlc: pause")
         self.player.Pause()
 
     def get_status(self):
-        return self.prop.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus')
+        status = self.prop.Get('org.mpris.MediaPlayer2.Player', 'PlaybackStatus').strip()
+        print "vlc: status is: "+ status
+        return status
 
     def get_position(self):
         return self.prop.Get("org.mpris.MediaPlayer2.Player", "Position")
    
-    def show_available_methods():
+    def show_available_methods(self):
+        def print_props(name, props):
+            print "Properties of "+ name
+            for k in props.keys():
+                print "   ", k
+            return
         props = self.prop.GetAll('org.mpris.MediaPlayer2')
-        print "for root:"
-        for k in props.keys():
-            print "   ", k
-        return
-        print "for player:"
+        print_props("root", props)
         props = self.prop.GetAll('org.mpris.MediaPlayer2.Player')
-        for k in props.keys():
-            print "   ", k
+        print_props("player", props)
+        props = self.prop.GetAll('org.mpris.MediaPlayer2.TrackList')
+        print_props("tracklist", props)
         return
 
     def get_metadata(self):
         return self.prop.Get("org.mpris.MediaPlayer2.Player", "Metadata")
 
+    def get_num_tracks(self):
+        tracks = self.prop.Get("org.mpris.MediaPlayer2.TrackList", "Tracks")
+        num_tracks = len(tracks)
+        return num_tracks
+
+    def clear_track_list(self):
+        def del_track():
+            tracks = self.prop.Get("org.mpris.MediaPlayer2.TrackList", "Tracks")
+            self.tracklist.RemoveTrack(tracks[0])
+        num_tracks = self.get_num_tracks()
+        while num_tracks:
+            del_track()
+            num_tracks = self.get_num_tracks()
+        toLog("Cleared track list")
+
     def get_lenght(self):
         # Return position, in micro seconds, of currently playing track
         return self.get_metadata()['mpris:length']
 
-    def add_audio_file(self, fn):
+    def add_track(self, fn):
         # Add audio file to playing list. 'fn' must be full path !
         obj_no_track = '/org/mpris/MediaPlayer2/TrackList/NoTrack'
         self.tracklist.AddTrack('file://' + fn, obj_no_track, True)
+        self.pause()    #we want explicit play
+        toLog("vlc: added the file '"+ fn +"' to the track list.")
 
 
 if __name__=="__main__":
     print "main"
     vlc = VLC()
-    vlc.add_audio_file("/home/jon/play_audiobook/test.mp3")
+    #vlc.show_available_methods()
+    #exit()
+    num_tracks = vlc.get_num_tracks()
+    print "len of track list:", num_tracks
+    vlc.add_track("/home/jon/play_audiobook/book/test.mp3")
+    num_tracks = vlc.get_num_tracks()
+    print "len of track list:", num_tracks
+    vlc.clear_track_list()
+    num_tracks = vlc.get_num_tracks()
+    print "len of track list:", num_tracks
+    exit()
     vlc.play()
     time.sleep(0.4)
-    for i in range(1000):
+    for i in range(10):
         print "For time passed:", i*0.5
         print "    status:", vlc.get_status()
         print "    position:", vlc.get_position()
