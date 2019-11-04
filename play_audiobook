@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-from vlc_dbus import VLC
+from AudioPlayer import AudioPlayer
 import tkinter as tk
 
-def handle_btnPlayPause(canvas, vlc):
+def handle_btnPlayPause(canvas, player):
     if player.get_status()=="Playing":
         player.pause()
     else:
         player.play()
-    print "    status:", vlc.get_status()
+    print "    status:", player.get_status()
 
 def ui(canvas, player):
     btnPlayPause = tk.Button(canvas, text="Play", font=("MS",12,"bold"), \
@@ -15,11 +15,10 @@ def ui(canvas, player):
     btnPlayPause.pack(expand=True,fill='both')
 
 player = AudioPlayer()
-if player.isNewBook():
-    player.setToFirstAudioFile()
+if player.is_new_book():
+    player.set_to_first_audio_file()
 else:
     current_audio_file = player.get_current_audio_file()
-player.add_audio_file(os.getcwd() +"test.mp3")
 player.pause()
 
 root = tk.Tk()
@@ -28,7 +27,7 @@ root.attributes('-zoomed', True)
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 canvas = tk.Canvas(root, width=screen_width, height=screen_height)
-ui(canvas, vlc)
+ui(canvas, player)
 canvas.pack( expand=True, fill='both')
 
 tk.mainloop()

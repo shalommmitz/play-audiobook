@@ -6,22 +6,24 @@ def toLog(msg):
 class AudioPlayer(object):
     def __init__(self):
         self.vlc = VLC()
-        self.current_audio_file = Note
+        self.current_audio_file = None
 
     def is_new_book(self):
         return True
 
     def set_to_first_audio_file(self):
-        self.current_audio_file = "./test.mp3"
+        self.current_audio_file = "test.mp3"
         
-    def add_audio_file(self, file_name): return vlc.add_audio_file(file_name)
-    def play(self): return vlc.play()
-    def pause(self): return vlc.pause()
-    def get_status(self): return vlc.get_status()
-    def get_position(self): return vlc.get_position()
-    def get_lenght(self): return vlc.get_lenght()
+    def add_audio_file(self, file_name): 
+        return self.vlc.add_audio_file(os.getcwd() +"/book/"+ file_name)
+    def play(self): return self.vlc.play()
+    def pause(self): return self.vlc.pause()
+    def get_status(self): return self.vlc.get_status()
+    def get_position(self): return self.vlc.get_position()
+    def get_lenght(self): return self.vlc.get_lenght()
 
 class VLC(object):
+    # Launchs and controls VLC, using the dbus interface
     def __init__(self):
         player_interface     = 'org.mpris.MediaPlayer2.Player'
         tracklist_interface     = 'org.mpris.MediaPlayer2.TrackList'
