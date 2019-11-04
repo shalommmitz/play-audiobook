@@ -3,20 +3,24 @@ from vlc_dbus import VLC
 import tkinter as tk
 
 def handle_btnPlayPause(canvas, vlc):
-    if vlc.get_status()=="Playing":
-        vlc.pause()
+    if player.get_status()=="Playing":
+        player.pause()
     else:
-        vlc.play()
+        player.play()
     print "    status:", vlc.get_status()
 
-def ui(canvas, vlc):
+def ui(canvas, player):
     btnPlayPause = tk.Button(canvas, text="Play", font=("MS",12,"bold"), \
-                             command = lambda: handle_btnPlayPause(canvas, vlc) )
+                             command = lambda: handle_btnPlayPause(canvas, player) )
     btnPlayPause.pack(expand=True,fill='both')
 
-vlc = VLC()
-vlc.add_audio_file(os.getcwd() +"/test.mp3")
-vlc.pause()
+player = AudioPlayer()
+if player.isNewBook():
+    player.setToFirstAudioFile()
+else:
+    current_audio_file = player.get_current_audio_file()
+player.add_audio_file(os.getcwd() +"test.mp3")
+player.pause()
 
 root = tk.Tk()
 root.attributes('-zoomed', True)

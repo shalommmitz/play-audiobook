@@ -3,6 +3,24 @@ import dbus, os, time
 def toLog(msg):
     print msg
 
+class AudioPlayer(object):
+    def __init__(self):
+        self.vlc = VLC()
+        self.current_audio_file = Note
+
+    def is_new_book(self):
+        return True
+
+    def set_to_first_audio_file(self):
+        self.current_audio_file = "./test.mp3"
+        
+    def add_audio_file(self, file_name): return vlc.add_audio_file(file_name)
+    def play(self): return vlc.play()
+    def pause(self): return vlc.pause()
+    def get_status(self): return vlc.get_status()
+    def get_position(self): return vlc.get_position()
+    def get_lenght(self): return vlc.get_lenght()
+
 class VLC(object):
     def __init__(self):
         player_interface     = 'org.mpris.MediaPlayer2.Player'
@@ -67,10 +85,6 @@ class VLC(object):
     def get_lenght(self):
         # Return position, in micro seconds, of currently playing track
         return self.get_metadata()['mpris:length']
-
-    def get_position(self):
-        # Return lenght, in micro seconds, of currently playing track
-        return self.prop.Get('org.mpris.MediaPlayer2.Player', 'Position')
 
     def add_audio_file(self, fn):
         # Add audio file to playing list. 'fn' must be full path !

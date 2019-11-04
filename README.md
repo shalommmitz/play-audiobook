@@ -20,6 +20,11 @@ You will need VLC and:
 
     sudo apt-get install python-dbus
 
+## The Audio Book
+
+For simplicity, only one audiobook is played at any time. The audio files of this book are put in the folder "./book".
+If this software detects that the actual audiobook was replaced, it will start playing the first file. Otherwise, it will start to play the audio file last heard.
+
 ## Author
 
 **Shalom Mitz** - [shalommmitz](https://github.com/shalommmitz)
