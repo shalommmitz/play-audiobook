@@ -7,20 +7,21 @@ class AudioPlayer(object):
     def __init__(self):
         self.vlc = VLC()
         self.current_audio_file = None
-        if not os.path.isfile("book_details.txt"):
+        self.path = os.path.dirname(os.path.abspath( __file__ )) +"/"
+        if not os.path.isfile(self.path +"book_details.txt"):
             book_details = self.get_book_details()
-            open("book_details.txt", 'w').write(book_details)
+            open(self.path +"book_details.txt", 'w').write(book_details)
 
     def get_book_details(self):
         files = self.get_file_list()
         book_details = ""
-        for file in files:
-            size = str(os.stat("./book/"+ file).st_size)
-            book_details += file +","+ size +"\n"
+        for file_name in files:
+            size = str(os.stat(self.path +"book/"+ file_name).st_size)
+            book_details += file_name +","+ size +"\n"
         return book_details
 
     def get_file_list(self):
-       for (_,__,files) in os.walk("book"):
+       for (_,__,files) in os.walk(self.path +"book"):
            pass
        files.sort()
        return files
@@ -37,7 +38,7 @@ class AudioPlayer(object):
 
     def get_last_played_audio_file(self):
         def is_new_book(self):
-            fn = "book_details.txt"
+            fn = self.path +"book_details.txt"
             if not os.path.isfile(fn):
                 is_new = True 
             else:
@@ -46,7 +47,7 @@ class AudioPlayer(object):
             toLog( "is_new_book returned "+str(is_new))
             return is_new
 
-        fn = "last_played_audio_file.txt"
+        fn = self.path +"last_played_audio_file.txt"
         if is_new_book(self) or not os.path.isfile(fn):
             files = self.get_file_list()
             file = files[0]
@@ -58,7 +59,7 @@ class AudioPlayer(object):
     def set_audio_file(self, file_name): 
         self.current_audio_file = file_name
         self.vlc.clear_track_list()
-        self.vlc.add_track(os.getcwd() +"/book/"+ file_name)
+        self.vlc.add_track(self.path +"/book/"+ file_name)
     def play(self): return self.vlc.play()
     def pause(self): return self.vlc.pause()
     def get_status(self): return self.vlc.get_status()

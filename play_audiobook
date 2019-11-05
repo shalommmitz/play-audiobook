@@ -38,13 +38,14 @@ def play_next_file(root, btnText, player):
 
     root.after(500, play_next_file, root, btnText, player)
 
-if not os.path.isdir("./book/"):
-    print "The audio book files should be at the './book/' folder - Aborting"
-    exit()
-if len(glob.glob("./book/*"))==0:
-    print "The audio book files should be at the './book/' folder - Aborting"
-    exit()
 player = AudioPlayer()
+msg = "The audio book files should be at the '"+ player.path +"book' folder - Aborting"
+if not os.path.isdir(player.path +"book/"):
+    print msg
+    exit()
+if len(glob.glob(player.path +"book/*"))==0:
+    print msg
+    exit()
 current_audio_file = player.get_last_played_audio_file()
 player.set_audio_file(current_audio_file)
 
