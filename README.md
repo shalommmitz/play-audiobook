@@ -16,9 +16,9 @@ This is it. The whole user interface.
 
 ## Prerequisites and Environment
 This project was written and tested using Ubuntu 18.04 and Python 2.7
-You will need VLC and:
-
-    sudo apt-get install python-dbus
+Dependencies:
+     
+    sudo apt-get install python-dbus vlc python-tk
 
 ## The VLC d-bus interface
 I found it hard to get reliable information about how to interface to VLC using dbus.
