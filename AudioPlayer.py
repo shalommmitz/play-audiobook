@@ -56,10 +56,13 @@ class AudioPlayer(object):
         toLog( "get_last_played_audio_file returned: "+ file)
         return file
 
-    def set_audio_file(self, file_name): 
-        self.current_audio_file = file_name
+    def set_audio_file(self, audio_file_name): 
+        self.current_audio_file = audio_file_name
         self.vlc.clear_track_list()
-        self.vlc.add_track(self.path +"/book/"+ file_name)
+        self.vlc.add_track(self.path +"/book/"+ audio_file_name)
+        fn = self.path +"last_played_audio_file.txt"
+        open(fn, 'w').write(audio_file_name)
+
     def play(self): return self.vlc.play()
     def pause(self): return self.vlc.pause()
     def get_status(self): return self.vlc.get_status()
