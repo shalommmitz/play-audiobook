@@ -33,7 +33,8 @@ class AudioPlayer(object):
         current_file_index = files.index(self.current_audio_file)
         print "current file index:", current_file_index
         if current_file_index==len(files)-1:   #last file
-            return None
+            #return None
+            return files[0]
         return files[current_file_index+1]
 
     def get_last_played_audio_file(self):
@@ -52,7 +53,7 @@ class AudioPlayer(object):
             files = self.get_file_list()
             file = files[0]
         else:
-            file = open(fn).read()
+            file = open(fn).read().strip()
         toLog( "get_last_played_audio_file returned: "+ file)
         return file
 
